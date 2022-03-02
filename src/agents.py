@@ -3,7 +3,7 @@ import game_state
 from game_state import Game
 import random
 import time
-from ai import minimax
+from ai import alpha_beta
 
 
 class Agent(metaclass=ABCMeta):
@@ -33,6 +33,7 @@ class Agent(metaclass=ABCMeta):
 
     @abstractmethod
     def win_message(self):
+        print(f'{self.player_name} won!')
         pass
 
 
@@ -67,7 +68,7 @@ class HumanTerminalAgent(Agent):
                 pass
 
     def win_message(self):
-        print(f'{self.player_name} won!')
+        super().win_message()
 
 
 class RandomAgent(Agent):
@@ -94,16 +95,18 @@ class RandomAgent(Agent):
         state.move(random.choice(moves), self.player, self.player_name)
 
     def win_message(self):
-        print(f'{self.player_name} won!')
+        super().win_message()
 
 
-class PerfectAgent(Agent):
-    def __init__(self, player):
+class AiAgent(Agent):
+    def __init__(self, player, name, depth):
         """
 
         :param player: integer value, valid input is game_state.PLAYER1 or game_state.PLAYER2
+        :param depth: maximum search depth
         """
-        super().__init__(player, "Impossible AI")
+        super().__init__(player, name)
+        self.depth = depth
 
     def move(self, state: Game) -> None:
         """
@@ -114,10 +117,40 @@ class PerfectAgent(Agent):
         maximizing = self.player > 0
         print(f'{self.player_name} starts exploring all nodes (this might take a while)')
         time_start = time.time()
-        score, node, explored = minimax(state, 9, maximizing)
+        score, node, explored = alpha_beta(state, self.depth, maximizing)
         time_end = time.time()
         print(f'{self.player_name} explored {explored} nodes in {time_end - time_start} seconds')
         state.move(node.last_action(), self.player, self.player_name)
 
     def win_message(self):
-        print(f'{self.player_name} won!')
+        super().win_message()
+
+
+class EasyAgent(AiAgent):
+    def __init__(self, player):
+        """
+
+        :param player: integer value, valid input is game_state.PLAYER1 or game_state.PLAYER2
+        """
+        super().__init__(player, "Easy AI", 2)
+
+    def move(self, state: Game) -> None:
+        super().move(state)
+
+    def win_message(self):
+        super().win_message()
+
+
+class PerfectAgent(AiAgent):
+    def __init__(self, player):
+        """
+
+        :param player: integer value, valid input is game_state.PLAYER1 or game_state.PLAYER2
+        """
+        super().__init__(player, "Impossible AI", 9)
+
+    def move(self, state: Game) -> None:
+        super().move(state)
+
+    def win_message(self):
+        super().win_message()

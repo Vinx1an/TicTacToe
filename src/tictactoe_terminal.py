@@ -1,12 +1,13 @@
 import game_state
 from game_state import Game
-from agents import HumanTerminalAgent, RandomAgent, PerfectAgent
+from agents import *
 
 
 def terminal_main():
     agents = {0: [HumanTerminalAgent, "Human player"],
               1: [RandomAgent, "Very easy AI"],
-              2: [PerfectAgent, "Impossible AI"]}
+              2: [EasyAgent, "Easy AI"],
+              3: [PerfectAgent, "Impossible AI"]}
     players = []
 
     while (length := len(players)) < 2:
